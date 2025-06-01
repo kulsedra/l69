@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../environments/environment';
-import { Client, Storage, Databases, ID } from 'appwrite';
+import { Client, Storage, Databases, ID, Query } from 'appwrite';
 import { Post, PostResource } from './models';
 
 @Injectable({
@@ -38,7 +38,7 @@ export class AppwriteClient {
     public async createPostResource(postResource: PostResource) {
         return this.databases.createDocument(
             'l69',
-            'post_resources',
+            'post_ressources',
             ID.unique(),
             postResource
         );
@@ -47,9 +47,9 @@ export class AppwriteClient {
     public async getPostRessources(postID: string) {
         return this.databases.listDocuments(
             'l69',
-            'post_resources',
+            'post_ressources',
             [
-                `post=${postID}`
+                Query.equal('post', postID)
             ]
         );
     }
