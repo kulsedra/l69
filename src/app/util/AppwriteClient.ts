@@ -55,6 +55,28 @@ export class AppwriteClient {
         );
     }
 
+    public async getPostMarkdown(postID: string) {
+        return this.databases.listDocuments(
+            'l69',
+            'post_ressources',
+            [
+                Query.equal('post', postID),
+                Query.equal('type', 'post_markdown_storage_link')
+            ]
+        );
+    }
+
+    public async getPostPictures(postID: string) {
+        return this.databases.listDocuments(
+            'l69',
+            'post_ressources',
+            [
+                Query.equal('post', postID),
+                Query.equal('type', 'post_picture_storage_link')
+            ]
+        );
+    }
+
     public async getPostRessources(postID: string) {
         return this.databases.listDocuments(
             'l69',

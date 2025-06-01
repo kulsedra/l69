@@ -1,12 +1,12 @@
 <div class="main">
-    <img class="thumbnail-image" alt="thumbnail" [src]="item.thumbnail.storage_link">
+    <img class="thumbnail-image" alt="thumbnail" [src]="postThumbnail">
 
-    <h1>{{ item.post.title }}</h1>
+    <h1>{{ post?.title }}</h1>
 
     <div>
-        <p>{{ item.post.author }}</p>
-        <p>{{ item.post.date }}</p>
+        <p>{{ post?.author }}</p>
+        <p> {{ post?.date | date: 'dd.MM.yyyy' }}</p>
     </div>
 
-    <markdown [src]="item.content.storage_link"/>
+    <markdown [src]="postMarkdown" />
 </div>

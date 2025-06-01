@@ -5,11 +5,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AppwriteClient } from '../../util/AppwriteClient';
+import { Router } from '@angular/router';
 
 interface CardData {
   title: string;
   description: string;
-  thumbnail: string
+  thumbnail: string;
+  postID: string;
 }
 
 @Component({
@@ -26,9 +28,12 @@ interface CardData {
   standalone: true,
 })
 export class HomeComponent implements OnInit {
+
   private client = new AppwriteClient();
 
   cardData: CardData[] = [];
+
+  constructor(private router: Router) { }
 
   async ngOnInit(): Promise<void> {
     try {
@@ -43,6 +48,10 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  goToPost(postID: string) {
+    this.router.navigate(['/post', postID]);
+  }
+
   private async createCardData(post: any): Promise<CardData> {
     const thumbnail = await this.downloadPostThumbnail(post.$id);
 
@@ -50,6 +59,7 @@ export class HomeComponent implements OnInit {
       title: post.title,
       description: post.description,
       thumbnail: thumbnail || 'assets/default-thumbnail.jpg', // Fallback image if no thumbnail is found
+      postID: post.$id
     };
   }
 

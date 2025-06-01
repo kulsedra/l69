@@ -1,45 +1,68 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { MarkdownComponent, MarkdownService } from 'ngx-markdown';
+import { Post } from '../../util/models';
+import { AppwriteClient } from '../../util/AppwriteClient';
 
 @Component({
   selector: 'app-post',
-  imports: [MarkdownComponent],
+  imports: [MarkdownComponent, CommonModule],
   templateUrl: './post.component.html',
   styleUrl: './post.component.css'
 })
-export class PostComponent {
+export class PostComponent implements OnInit {
+  postId: string = '';
+
+  post: Post | null = null;
+
+  postThumbnail: string | null = null;
+
+  postMarkdown: string | null = null;
+
+  client = new AppwriteClient();
 
   markdownService: MarkdownService;
 
-  constructor(markdownService: MarkdownService) {
+  constructor(private route: ActivatedRoute, markdownService: MarkdownService) {
     this.markdownService = markdownService;
   }
 
-  testPost = {
-    author: "Lukas",
-    date: "2025-06-01",
-    title: "Biercolai Festli",
-    description: "Fest zum fiire, dass d Nina zrugg chunt",
-    category: "events"
+  async ngOnInit(): Promise<void> {
+    this.postId = this.route.snapshot.paramMap.get('id') || '';
+
+    this.post = await this.client.getPost(this.postId) as unknown as Post;
+
+    this.postThumbnail = await this.downloadPostThumbnail(this.postId);
+
+    this.postMarkdown = await this.downloadPostMarkdown(this.postId);
   }
 
-  testPostThumbnail = {
-    type: "post_thumbnail_storage_link",
-    storage_link: "assets/post.jpg",
-    post: this.testPost
+  private async downloadPostThumbnail(postId: string): Promise<string | null> {
+    const resources = await this.client.getPostThumbnail(postId);
+
+    if (resources.documents.length === 0) {
+      console.warn('No thumbnail found for post:', postId);
+
+      return null;
+    }
+
+    const thumbnailLink = resources.documents[0]['storage_link'];
+
+    return await this.client.downloadPostResource(thumbnailLink);
   }
 
-  testPostContent = {
-    type: "post_markdown_storage_link",
-    storage_link: "assets/post.md",
-    post: this.testPost
-  }
+  private async downloadPostMarkdown(postId: string): Promise<string | null> {
+    const resources = await this.client.getPostMarkdown(postId);
 
-  get item() {
-    return {
-      post: this.testPost,
-      thumbnail: this.testPostThumbnail,
-      content: this.testPostContent
-    };
+    if (resources.documents.length === 0) {
+      console.warn('No markdown found for post:', postId);
+
+      return null;
+    }
+
+    const markdownLink = resources.documents[0]['storage_link'];
+
+    return await this.client.downloadPostResource(markdownLink);
   }
 }
