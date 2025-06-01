@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { FormControl, ReactiveFormsModule} from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -6,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-submit',
@@ -18,6 +20,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatDatepickerModule,
     MatNativeDateModule,
     MatButtonModule,
+    MatSelectModule,
+    CommonModule
   ],
 })
 export class SubmitComponent {
@@ -25,14 +29,22 @@ export class SubmitComponent {
   thumbnailFile: File | null = null;
   markdownFile: File | null = null;
   additionalFiles: File[] = [];
+  categories = [
+    { label: 'Events', value: 'events' },
+    { label: 'News', value: 'news' },
+    { label: 'Backstage', value: 'backstage' },
+    { label: 'Other', value: 'other' }
+  ];
 
   constructor(private fb: FormBuilder) {
     this.blogForm = this.fb.group({
       title: ['', Validators.required],
       description: ['', Validators.required],
       date: ['', Validators.required],
-      author: ['', Validators.required]
+      author: ['', Validators.required],
+      category: ['', Validators.required]
     });
+
   }
 
   onThumbnailChange(event: any) {
@@ -60,6 +72,7 @@ export class SubmitComponent {
     formData.append('date', this.blogForm.value.date);
     formData.append('thumbnail', this.thumbnailFile as Blob);
     formData.append('markdown', this.markdownFile as Blob);
+    formData.append('category', this.blogForm.value.category);
 
     this.additionalFiles.forEach((file, index) => {
       formData.append(`additionalFiles[]`, file);
@@ -69,7 +82,7 @@ export class SubmitComponent {
       TODO: post zu appwrite
       alli date sind in 'formData'
     */
-    console.log(formData.get('markdown'));
+    console.log(formData.get('category'));
   }
 }
  
