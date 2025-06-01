@@ -1,50 +1,69 @@
-import { Component, inject } from '@angular/core';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
-import { map } from 'rxjs/operators';
-import { AsyncPipe } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { AppwriteClient } from '../../util/AppwriteClient';
+
+interface CardData {
+  title: string;
+  description: string;
+  thumbnail: string
+}
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
-  styleUrl: './home.component.css',
+  styleUrls: ['./home.component.css'],
   imports: [
-    AsyncPipe,
     MatGridListModule,
-    MatMenuModule,
-    MatIconModule,
+    MatCardModule,
     MatButtonModule,
-    MatCardModule
-  ]
+    MatIconModule,
+    CommonModule
+  ],
+  standalone: true,
 })
-export class HomeComponent {
-  private breakpointObserver = inject(BreakpointObserver);
+export class HomeComponent implements OnInit {
+  private client = new AppwriteClient();
 
+  cardData: CardData[] = [];
 
+  async ngOnInit(): Promise<void> {
+    try {
+      const posts = await this.client.getAllPosts();
 
-  /** Based on the screen size, switch from standard to one column per row */
-  cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
+      this.cardData = await Promise.all(
+        posts.documents.map(post => this.createCardData(post))
+      );
 
-    map(({ matches }) => {
-      const cardData = [
-            { title: 'Card 6', description: "text1", cols: 1, rows: 1, image: 'src/assets/bierolai.jpg' },
-            { title: 'Card 2', description: "text2",cols: 1, rows: 1, image: 'assets/image2.jpg' },
-            { title: 'Card 3', description: "text3",cols: 1, rows: 1, image: 'assets/image3.jpg' },
-            { title: 'Card 4', description: "text4",cols: 1, rows: 1, image: 'assets/image4.jpg' }
-          ];
-           if (matches) {
-      // big screen: 2 column
-      return cardData.map(card => ({ ...card, cols: 2}));
+    } catch (error) {
+      console.error('Fehler beim Laden der Posts:', error);
     }
-     
-      // Mobile: 1 column
-      return cardData.map(card => ({ ...card, cols: 1 }));
-    
-      
-    })
-  );
+  }
+
+  private async createCardData(post: any): Promise<CardData> {
+    const thumbnail = await this.downloadPostThumbnail(post.$id);
+
+    return {
+      title: post.title,
+      description: post.description,
+      thumbnail: thumbnail || 'assets/default-thumbnail.jpg', // Fallback image if no thumbnail is found
+    };
+  }
+
+  private async downloadPostThumbnail(postId: string): Promise<string | null> {
+    const resources = await this.client.getPostThumbnail(postId);
+
+    if (resources.documents.length === 0) {
+      console.warn('No thumbnail found for post:', postId);
+
+      return null;
+    }
+
+    const thumbnailLink = resources.documents[0]['storage_link'];
+
+    return await this.client.downloadPostResource(thumbnailLink);
+  }
 }

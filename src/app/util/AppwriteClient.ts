@@ -28,10 +28,10 @@ export class AppwriteClient {
         )
     }
 
-    public async downloadPostResource(postResource: PostResource) {
+    public async downloadPostResource(storageLink: string) {
         return this.storage.getFileView(
             'l69',
-            postResource.storage_link
+            storageLink
         )
     }
 
@@ -41,6 +41,17 @@ export class AppwriteClient {
             'post_ressources',
             ID.unique(),
             postResource
+        );
+    }
+
+    public async getPostThumbnail(postID: string) {
+        return this.databases.listDocuments(
+            'l69',
+            'post_ressources',
+            [
+                Query.equal('post', postID),
+                Query.equal('type', 'post_thumbnail_storage_link')
+            ]
         );
     }
 
