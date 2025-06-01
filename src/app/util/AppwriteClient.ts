@@ -21,11 +21,11 @@ export class AppwriteClient {
             .setProject(environment.appwriteProjectId);
     }
 
-    public async getClubs(): Promise<any> {
+    public async getPosts() {
         return this.databases.listDocuments(
-            'usgang.sg',
-            'club',
+            'l69',
+            'posts',
             []
-        );
+        )
     }
 }
