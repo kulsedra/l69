@@ -20,11 +20,11 @@ export class AppwriteClient {
             .setProject(environment.appwriteProjectId);
     }
 
-    public async uploadPostResource(postResource: PostResource, file: File) {
+    public async uploadPostResource(resource: File) {
         return this.storage.createFile(
             'l69',
-            postResource.storage_link,
-            file
+            ID.unique(),
+            resource
         )
     }
 

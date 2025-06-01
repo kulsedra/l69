@@ -23,13 +23,13 @@
   </mat-form-field>
 
   <mat-form-field appearance="outline">
-  <mat-label>Category</mat-label>
-  <mat-select formControlName="category" required>
-    <mat-option *ngFor="let category of categories" [value]="category.value">
-      {{ category.label }}
-    </mat-option>
-  </mat-select>
-</mat-form-field>
+    <mat-label>Category</mat-label>
+    <mat-select formControlName="category" required>
+      <mat-option *ngFor="let category of categories" [value]="category.value">
+        {{ category.label }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
 
   <div class="file-inputs">
     <label>
@@ -52,5 +52,11 @@
     </label>
   </div>
 
-  <button mat-flat-button color="primary" type="submit">sumbit</button>
+  <button mat-flat-button color="primary" type="submit" [disabled]="isLoading || blogForm.invalid">
+    <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="20" color="accent"
+      style="vertical-align: middle; margin-right: 8px;">
+    </mat-progress-spinner>
+    <span *ngIf="!isLoading">Submit</span>
+    <span *ngIf="isLoading">Submitting…</span>
+  </button>
 </form>

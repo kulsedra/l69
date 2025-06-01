@@ -6,8 +6,15 @@ export interface Post {
     category: 'events' | 'news' | 'backstage' | 'other';
 }
 
+export type PostResourceType = 'post_thumbnail_storage_link' | 'post_picture_storage_link' | 'post_markdown_storage_link';
+
 export interface PostResource {
-    type: 'post_thumbnail_storage_link' | 'post_picture_storage_link' | 'post_markdown_storage_link';
+    type: PostResourceType;
     storage_link: string;
-    post: Post;
+    post: string;
+}
+
+export interface UploadResource {
+    type: PostResourceType;
+    file: File;
 }

@@ -1,13 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FormControl, ReactiveFormsModule} from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
+import { Post, PostResource, PostResourceType, UploadResource } from '../../util/models';
+import { AppwriteClient } from '../../util/AppwriteClient';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-submit',
@@ -21,10 +24,13 @@ import { MatSelectModule } from '@angular/material/select';
     MatNativeDateModule,
     MatButtonModule,
     MatSelectModule,
-    CommonModule
+    CommonModule,
+    MatProgressSpinnerModule
   ],
 })
 export class SubmitComponent {
+  isLoading = false;
+  client = new AppwriteClient();
   blogForm: FormGroup;
   thumbnailFile: File | null = null;
   markdownFile: File | null = null;
@@ -59,30 +65,101 @@ export class SubmitComponent {
     this.additionalFiles = Array.from(event.target.files);
   }
 
-  onSubmit() {
+  async onSubmit() {
     if (this.blogForm.invalid || !this.thumbnailFile || !this.markdownFile) {
       alert('mädchen bist du dumm oder kommst du jetzt klar?');
       return;
     }
 
-    const formData = new FormData();
-    formData.append('title', this.blogForm.value.title);
-    formData.append('author', this.blogForm.value.description);
-    formData.append('description', this.blogForm.value.description);
-    formData.append('date', this.blogForm.value.date);
-    formData.append('thumbnail', this.thumbnailFile as Blob);
-    formData.append('markdown', this.markdownFile as Blob);
-    formData.append('category', this.blogForm.value.category);
+    this.isLoading = true;
 
-    this.additionalFiles.forEach((file, index) => {
-      formData.append(`additionalFiles[]`, file);
-    });
+    const post: Post = {
+      title: this.blogForm.value.title,
+      author: this.blogForm.value.author,
+      description: this.blogForm.value.description,
+      date: this.blogForm.value.date,
+      category: this.blogForm.value.category
+    }
 
-    /*
-      TODO: post zu appwrite
-      alli date sind in 'formData'
-    */
-    console.log(formData.get('category'));
+    const postResult = await this.createPost(post)
+
+    if (!postResult) {
+      alert('Error creating post, check console for details');
+
+      this.isLoading = false;
+
+      return;
+    }
+
+    const uploadResources = [
+      {
+        type: 'post_thumbnail_storage_link' as PostResourceType,
+        file: this.thumbnailFile
+      },
+      {
+        type: 'post_markdown_storage_link' as PostResourceType,
+        file: this.markdownFile
+      },
+      ...this.additionalFiles.map(file => ({
+        type: 'post_picture_storage_link' as PostResourceType,
+        file
+      }))
+    ]
+
+    const postResources = await this.uploadFiles(uploadResources, postResult);
+
+    if (postResources.some(resource => resource === null)) {
+      alert('Error uploading files, check console for details');
+
+      this.isLoading = false;
+
+      return;
+    }
+
+    this.isLoading = false;
+
+    alert('Post created successfully!');
+
+    console.log('Post created successfully:', postResult, postResources);
+
+  }
+
+  async createPost(post: Post): Promise<string | null> {
+    try {
+      const postId = await this.client.createPost(post);
+      return postId.$id;
+    } catch (error) {
+      console.error('Error creating post:', error);
+      return null
+    }
+  }
+
+  async uploadFile(uploadResource: UploadResource, postID: string): Promise<PostResource | null> {
+    try {
+      const fileRef = await this.client.uploadPostResource(uploadResource.file);
+
+      const postResource: PostResource = {
+        type: uploadResource.type,
+        storage_link: fileRef.$id,
+        post: postID
+      };
+
+      await this.client.createPostResource(postResource);
+
+      return postResource;
+    } catch (error) {
+      console.error('Error uploading file:', error);
+
+      return null;
+    }
+  }
+
+  async uploadFiles(uploadResources: UploadResource[], postID: string): Promise<(PostResource | null)[]> {
+    try {
+      return Promise.all(uploadResources.map(uploadResource => this.uploadFile(uploadResource, postID)));
+    } catch (error) {
+      console.error('Error uploading files:', error);
+      return [];
+    }
   }
 }
- 
