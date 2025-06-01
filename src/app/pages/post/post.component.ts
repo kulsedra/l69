@@ -1,12 +1,19 @@
 import { Component } from '@angular/core';
+import { MarkdownComponent, MarkdownService } from 'ngx-markdown';
 
 @Component({
   selector: 'app-post',
-  imports: [],
+  imports: [MarkdownComponent],
   templateUrl: './post.component.html',
   styleUrl: './post.component.css'
 })
 export class PostComponent {
+
+  markdownService: MarkdownService;
+
+  constructor(markdownService: MarkdownService) {
+    this.markdownService = markdownService;
+  }
 
   testPost = {
     author: "Lukas",
@@ -22,10 +29,17 @@ export class PostComponent {
     post: this.testPost
   }
 
+  testPostContent = {
+    type: "post_markdown_storage_link",
+    storage_link: "assets/post.md",
+    post: this.testPost
+  }
+
   get item() {
     return {
       post: this.testPost,
-      thumbnail: this.testPostThumbnail
+      thumbnail: this.testPostThumbnail,
+      content: this.testPostContent
     };
   }
 }
