@@ -33,6 +33,6 @@ jobs:
           username: ${{ secrets.SFTP_USERNAME }}
           password: ${{ secrets.SFTP_PASSWORD }}
           port: ${{ secrets.SFTP_PORT }}
-          local-dir: './dist/l69/'
+          local-dir: './dist/l69/browser/'
           server-dir: '/'
       
