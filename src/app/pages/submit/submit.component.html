@@ -1,0 +1,47 @@
+<form [formGroup]="blogForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data" class="form-container">
+
+  <mat-form-field appearance="outline">
+    <mat-label>Title</mat-label>
+    <input matInput formControlName="title" required />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Author</mat-label>
+    <input matInput formControlName="author" required />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Date</mat-label>
+    <input matInput [matDatepicker]="picker" formControlName="date" required />
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Description</mat-label>
+    <textarea matInput formControlName="description" required></textarea>
+  </mat-form-field>
+
+  <div class="file-inputs">
+    <label>
+      <p>Thumbnail image*</p>
+      <input type="file" accept="image/*" (change)="onThumbnailChange($event)" required />
+    </label>
+
+    <hr>
+
+    <label>
+      <p>Markdown (.md) file*</p>
+      <input type="file" accept=".md" (change)="onMarkdownChange($event)" required />
+    </label>
+
+    <hr>
+
+    <label>
+      <p>Additional files</p>
+      <input type="file" multiple (change)="onAdditionalFilesChange($event)" />
+    </label>
+  </div>
+
+  <button mat-flat-button color="primary" type="submit">sumbit</button>
+</form>
