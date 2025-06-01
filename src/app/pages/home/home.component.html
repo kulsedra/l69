@@ -17,8 +17,13 @@
             </mat-card-title>
           </mat-card-header>
           <mat-card-content class="dashboard-card-content">
-            <div>Card Content Here</div>
-          </mat-card-content>
+          <div class="card-layout">
+            <img src="assets/bierolai.jpg" alt="image name" class="card-image" />
+            <div class="card-text">
+              <p>{{ card.description }}</p>
+            </div>
+          </div>
+        </mat-card-content>
         </mat-card>
       </mat-grid-tile>
     }
