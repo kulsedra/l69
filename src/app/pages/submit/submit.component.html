@@ -40,17 +40,32 @@
     <hr>
 
     <label>
-      <p>Markdown (.md) file*</p>
-      <input type="file" accept=".md" (change)="onMarkdownChange($event)" required />
-    </label>
-
-    <hr>
-
-    <label>
-      <p>Additional files</p>
+      <p>Upload Files to get an URL that you can put into your markdown</p>
       <input type="file" multiple (change)="onAdditionalFilesChange($event)" />
     </label>
+
+    <button (click)="uploadFiles()" type="button" mat-flat-button color="primary" [disabled]="isLoading">
+      <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="20" color="accent"
+        style="vertical-align: middle; margin-right: 8px;">
+      </mat-progress-spinner>
+      <span *ngIf="!isLoading">Upload Files</span>
+      <span *ngIf="isLoading">Uploading</span>
+    </button>
+    <ul>
+      <li *ngFor="let imageURL of imageURLs">
+        {{ imageURL }}
+      </li>
+    </ul>
+
+    <hr>
   </div>
+
+  <div>
+    <p>Create your post*</p>
+    <angular-markdown-editor textareaId="blogPost" name="markdownText" [(ngModel)]="markdownText"
+      [options]="editorOptions" [ngModelOptions]="{ standalone: true }"></angular-markdown-editor>
+  </div>
+
 
   <button mat-flat-button color="primary" type="submit" [disabled]="isLoading || blogForm.invalid">
     <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="20" color="accent"

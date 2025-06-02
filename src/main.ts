@@ -6,11 +6,20 @@ import { routes } from './app/app.routes';
 import { importProvidersFrom } from '@angular/core';
 import { MarkdownModule } from 'ngx-markdown';
 import { provideHttpClient } from '@angular/common/http';
+import { AngularMarkdownEditorModule } from 'angular-markdown-editor';
+
 
 bootstrapApplication(AppComponent, {
   providers: [
     provideRouter(routes),
     provideHttpClient(),
-    importProvidersFrom(MarkdownModule.forRoot())
+    importProvidersFrom(MarkdownModule.forRoot()),
+    importProvidersFrom(
+      AngularMarkdownEditorModule.forRoot({
+        iconlibrary: 'fa',
+        resize: 'vertical',
+        language: 'en'
+      })
+    )
   ],
 });

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -11,6 +11,9 @@ import { MatSelectModule } from '@angular/material/select';
 import { Post, PostResource, PostResourceType, UploadResource } from '../../util/models';
 import { AppwriteClient } from '../../util/AppwriteClient';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { AngularMarkdownEditorModule } from 'angular-markdown-editor';
+import { FormsModule } from '@angular/forms';
+import { MarkdownService } from 'ngx-markdown';
 
 @Component({
   selector: 'app-submit',
@@ -25,15 +28,19 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatButtonModule,
     MatSelectModule,
     CommonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    AngularMarkdownEditorModule,
+    FormsModule
   ],
 })
-export class SubmitComponent {
+export class SubmitComponent implements OnInit {
+  imageURLs: string[] = [];
+  editorOptions: any;
+  markdownText: string = '';
   isLoading = false;
   client = new AppwriteClient();
   blogForm: FormGroup;
   thumbnailFile: File | null = null;
-  markdownFile: File | null = null;
   additionalFiles: File[] = [];
   categories = [
     { label: 'Events', value: 'events' },
@@ -42,7 +49,7 @@ export class SubmitComponent {
     { label: 'Other', value: 'other' }
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private markdownService: MarkdownService) {
     this.blogForm = this.fb.group({
       title: ['', Validators.required],
       description: ['', Validators.required],
@@ -57,16 +64,12 @@ export class SubmitComponent {
     this.thumbnailFile = event.target.files[0];
   }
 
-  onMarkdownChange(event: any) {
-    this.markdownFile = event.target.files[0];
-  }
-
   onAdditionalFilesChange(event: any) {
     this.additionalFiles = Array.from(event.target.files);
   }
 
   async onSubmit() {
-    if (this.blogForm.invalid || !this.thumbnailFile || !this.markdownFile) {
+    if (this.blogForm.invalid || !this.thumbnailFile || !this.markdownText) {
       alert('mädchen bist du dumm oder kommst du jetzt klar?');
       return;
     }
@@ -91,25 +94,30 @@ export class SubmitComponent {
       return;
     }
 
-    const uploadResources = [
-      {
-        type: 'post_thumbnail_storage_link' as PostResourceType,
-        file: this.thumbnailFile
-      },
-      {
-        type: 'post_markdown_storage_link' as PostResourceType,
-        file: this.markdownFile
-      },
-      ...this.additionalFiles.map(file => ({
-        type: 'post_picture_storage_link' as PostResourceType,
-        file
-      }))
-    ]
+    const thumbnail = {
+      type: 'post_thumbnail_storage_link' as PostResourceType,
+      file: this.thumbnailFile
+    }
 
-    const postResources = await this.uploadFiles(uploadResources, postResult);
+    const thumbnailResource = await this.uploadFile(thumbnail, postResult);
 
-    if (postResources.some(resource => resource === null)) {
-      alert('Error uploading files, check console for details');
+    if (!thumbnailResource) {
+      alert('Error uploading thumbnail, check console for details');
+
+      this.isLoading = false;
+
+      return;
+    }
+
+    const markdown = {
+      type: 'post_markdown_storage_link' as PostResourceType,
+      file: new File([this.markdownText], crypto.randomUUID(), { type: "text/markdown" })
+    }
+
+    const markdownResource = await this.uploadFile(markdown, postResult);
+
+    if (!markdownResource) {
+      alert('Error uploading markdown, check console for details');
 
       this.isLoading = false;
 
@@ -119,9 +127,6 @@ export class SubmitComponent {
     this.isLoading = false;
 
     alert('Post created successfully!');
-
-    console.log('Post created successfully:', postResult, postResources);
-
   }
 
   async createPost(post: Post): Promise<string | null> {
@@ -154,12 +159,37 @@ export class SubmitComponent {
     }
   }
 
-  async uploadFiles(uploadResources: UploadResource[], postID: string): Promise<(PostResource | null)[]> {
+  async uploadFiles(): Promise<void> {
+
+    if (this.additionalFiles.length === 0) {
+      alert('No additional files selected.');
+
+      return;
+    }
+
+    const imageFiles = this.additionalFiles.map(file =>
+      this.client.uploadPostResource(file));
+
+
+    this.isLoading = true;
+
     try {
-      return Promise.all(uploadResources.map(uploadResource => this.uploadFile(uploadResource, postID)));
+      const fileUploadRefs = (await Promise.all(imageFiles)).map(fileRef => fileRef.$id);
+
+      this.imageURLs = (await Promise.all(fileUploadRefs.map(id => this.client.downloadPostResource(id))))
     } catch (error) {
       console.error('Error uploading files:', error);
-      return [];
+
+      alert('Error uploading files, check console for details');
     }
+    finally {
+      this.isLoading = false;
+    }
+  }
+
+  ngOnInit() {
+    this.editorOptions = {
+      parser: (val: string) => this.markdownService.parse(val.trim())
+    };
   }
 }
