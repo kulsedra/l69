@@ -1,0 +1,9 @@
+mat-card img {
+    max-height: 300px;
+    width: 700px;
+    object-fit: cover;
+  }
+  
+  mat-card {
+    margin-bottom: 50px;
+  }

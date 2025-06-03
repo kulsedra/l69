@@ -96,6 +96,24 @@ export class AppwriteClient {
         );
     }
 
+    public async inactivatePost(postID: string) {
+        return this.databases.updateDocument(
+            'l69',
+            'posts',
+            postID,
+            { active: false }
+        );
+    }
+
+    public async activatePost(postID: string) {
+        return this.databases.updateDocument(
+            'l69',
+            'posts',
+            postID,
+            { active: true }
+        );
+    }
+
     public async getPost(postID: string) {
         return this.databases.getDocument(
             'l69',

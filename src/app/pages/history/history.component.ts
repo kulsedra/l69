@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AppwriteClient } from '../../util/AppwriteClient';
 import { Router } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 interface CardData {
   title: string;
@@ -15,19 +16,22 @@ interface CardData {
 }
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
+  selector: 'app-history',
+  templateUrl: './history.component.html',
+  styleUrls: ['./history.component.css'],
   imports: [
     MatGridListModule,
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    CommonModule
+    CommonModule,
+    MatProgressSpinnerModule
   ],
   standalone: true,
 })
-export class HomeComponent implements OnInit {
+export class HistoryComponent implements OnInit {
+
+  isLoading = false;
 
   private client = new AppwriteClient();
 
@@ -36,9 +40,13 @@ export class HomeComponent implements OnInit {
   constructor(private router: Router) { }
 
   async ngOnInit(): Promise<void> {
+    await this.getAllPosts();
+  }
+
+  async getAllPosts() {
     try {
       const posts = (await this.client.getAllPosts())
-        .documents.filter(post => post['active']);
+        .documents.filter(post => !post['active']);
 
       this.cardData = await Promise.all(
         posts.map(post => this.createCardData(post))
@@ -46,6 +54,25 @@ export class HomeComponent implements OnInit {
 
     } catch (error) {
       console.error('Fehler beim Laden der Posts:', error);
+    }
+  }
+
+
+  async activatePost(postID: string) {
+    this.isLoading = true;
+
+    try {
+      await this.client.activatePost(postID);
+
+      alert('Post activated successfully!');
+
+      await this.getAllPosts();
+    } catch (error) {
+      alert('Error activating post. Check console for details.');
+
+      console.error('Error activating post:', error);
+    } finally {
+      this.isLoading = false;
     }
   }
 

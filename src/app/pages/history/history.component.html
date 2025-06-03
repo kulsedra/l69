@@ -1,0 +1,20 @@
+<div class="grid-container">
+  <h1 class="mat-h1">Dashboard</h1>
+  <mat-grid-list cols="2" rowHeight="2:1">
+    <mat-grid-tile *ngFor="let card of cardData" [colspan]="2" [rowspan]="1">
+      <mat-card (click)="goToPost(card.postID)">
+        <img mat-card-image [src]="card.thumbnail" alt="">
+        <mat-card-title>{{ card.title }}</mat-card-title>
+        <mat-card-content>{{ card.description }}</mat-card-content>
+        <button (click)="activatePost(card.postID)" type="button" mat-flat-button color="primary"
+          [disabled]="isLoading">
+          <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="20" color="accent"
+            style="vertical-align: middle; margin-right: 8px;">
+          </mat-progress-spinner>
+          <span *ngIf="!isLoading">Reactivate post</span>
+          <span *ngIf="isLoading">Reactivating...</span>
+        </button>
+      </mat-card>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

@@ -1,0 +1,9 @@
+<p style="margin-top: 50px;">do you really want to delete this post?</p>
+<button (click)="inactivatePost()" type="button" mat-flat-button color="primary" [disabled]="isLoading">
+    <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="20" color="accent"
+        style="vertical-align: middle; margin-right: 8px;">
+    </mat-progress-spinner>
+    <span *ngIf="!isLoading">Delete Post</span>
+    <span *ngIf="isLoading">Deleting...</span>
+</button>
+<p style="margin-top: 100px;">you can still find the post in the <a href="/history">history page</a></p>
