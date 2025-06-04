@@ -4,9 +4,10 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { AppwriteClient } from '../../util/AppwriteClient';
+import { AppwriteClient } from '../../lib/AppwriteClient';
 import { Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { PostCardComponent } from "../../components/post-card/post-card.component";
 
 interface CardData {
   title: string;
@@ -25,8 +26,9 @@ interface CardData {
     MatButtonModule,
     MatIconModule,
     CommonModule,
-    MatProgressSpinnerModule
-  ],
+    MatProgressSpinnerModule,
+    PostCardComponent
+],
   standalone: true,
 })
 export class HistoryComponent implements OnInit {

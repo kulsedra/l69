@@ -1,10 +1,12 @@
 <main>
   <mat-sidenav-container class="sidenav-container">
     <mat-sidenav-content>
-      <mat-toolbar color="primary">
+      <mat-toolbar class="app-toolbar" color="primary">
         <span>l69</span>
         <span class="spacer"></span>
-        <a href= "/about">about us</a>
+        <button (click)="goToAboutPage()" type="button" mat-flat-button>
+          <span>Über uns</span>
+        </button>
       </mat-toolbar>
       <!-- App-Content -->
       <router-outlet></router-outlet>

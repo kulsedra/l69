@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ActivatedRoute } from '@angular/router';
-import { AppwriteClient } from '../../../util/AppwriteClient';
+import { AppwriteClient } from '../../../lib/AppwriteClient';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 

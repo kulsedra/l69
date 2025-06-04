@@ -8,14 +8,15 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { Post, PostResource, PostResourceType, UploadResource } from '../../../util/models';
-import { AppwriteClient } from '../../../util/AppwriteClient';
+import { Post, PostResource, PostResourceType, UploadResource } from '../../../lib/models';
+import { AppwriteClient } from '../../../lib/AppwriteClient';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AngularMarkdownEditorModule } from 'angular-markdown-editor';
 import { FormsModule } from '@angular/forms';
 import { MarkdownService } from 'ngx-markdown';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { PostFormComponent } from "../../../components/post-form/post-form.component";
 
 @Component({
   selector: 'app-edit',
@@ -32,8 +33,9 @@ import { HttpClient } from '@angular/common/http';
     CommonModule,
     MatProgressSpinnerModule,
     AngularMarkdownEditorModule,
-    FormsModule
-  ],
+    FormsModule,
+    PostFormComponent
+],
 })
 export class EditComponent implements OnInit {
   postId: string = '';
@@ -117,7 +119,7 @@ export class EditComponent implements OnInit {
 
     const markdown = {
       type: 'post_markdown_storage_link' as PostResourceType,
-      file: new File([this.markdownText], crypto.randomUUID(), { type: "text/markdown" })
+      file: new File([this.markdownText], `${crypto.randomUUID()}.md`, { type: "text/markdown" })
     }
 
     const markdownResource = await this.uploadFile(markdown, postResult);

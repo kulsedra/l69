@@ -31,4 +31,8 @@ export class AppComponent {
       map(result => result.matches),
       shareReplay()
     );
+
+  goToAboutPage() {
+    window.location.href = 'https://l69.ch/about';
+  }
 }

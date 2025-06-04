@@ -8,12 +8,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
-import { Post, PostResource, PostResourceType, UploadResource } from '../../util/models';
-import { AppwriteClient } from '../../util/AppwriteClient';
+import { Post, PostResource, PostResourceType, UploadResource } from '../../lib/models';
+import { AppwriteClient } from '../../lib/AppwriteClient';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AngularMarkdownEditorModule } from 'angular-markdown-editor';
 import { FormsModule } from '@angular/forms';
 import { MarkdownService } from 'ngx-markdown';
+import { PostFormComponent } from "../../components/post-form/post-form.component";
 
 @Component({
   selector: 'app-submit',
@@ -30,7 +31,8 @@ import { MarkdownService } from 'ngx-markdown';
     CommonModule,
     MatProgressSpinnerModule,
     AngularMarkdownEditorModule,
-    FormsModule
+    FormsModule,
+    PostFormComponent
   ],
 })
 export class SubmitComponent implements OnInit {
@@ -42,12 +44,7 @@ export class SubmitComponent implements OnInit {
   blogForm: FormGroup;
   thumbnailFile: File | null = null;
   additionalFiles: File[] = [];
-  categories = [
-    { label: 'Events', value: 'events' },
-    { label: 'News', value: 'news' },
-    { label: 'Backstage', value: 'backstage' },
-    { label: 'Other', value: 'other' }
-  ];
+
 
   constructor(private fb: FormBuilder, private markdownService: MarkdownService) {
     this.blogForm = this.fb.group({
@@ -111,7 +108,7 @@ export class SubmitComponent implements OnInit {
 
     const markdown = {
       type: 'post_markdown_storage_link' as PostResourceType,
-      file: new File([this.markdownText], crypto.randomUUID(), { type: "text/markdown" })
+      file: new File([this.markdownText], `${crypto.randomUUID()}.md`, { type: "text/markdown" })
     }
 
     const markdownResource = await this.uploadFile(markdown, postResult);
@@ -156,34 +153,6 @@ export class SubmitComponent implements OnInit {
       console.error('Error uploading file:', error);
 
       return null;
-    }
-  }
-
-  async uploadFiles(): Promise<void> {
-
-    if (this.additionalFiles.length === 0) {
-      alert('No additional files selected.');
-
-      return;
-    }
-
-    const imageFiles = this.additionalFiles.map(file =>
-      this.client.uploadPostResource(file));
-
-
-    this.isLoading = true;
-
-    try {
-      const fileUploadRefs = (await Promise.all(imageFiles)).map(fileRef => fileRef.$id);
-
-      this.imageURLs = (await Promise.all(fileUploadRefs.map(id => this.client.downloadPostResource(id))))
-    } catch (error) {
-      console.error('Error uploading files:', error);
-
-      alert('Error uploading files, check console for details');
-    }
-    finally {
-      this.isLoading = false;
     }
   }
 

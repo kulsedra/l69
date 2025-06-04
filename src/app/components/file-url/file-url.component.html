@@ -1,0 +1,12 @@
+<button (click)="uploadFiles()" type="button" mat-flat-button color="primary" [disabled]="isLoading">
+    <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="20" color="accent"
+      style="vertical-align: middle; margin-right: 8px;">
+    </mat-progress-spinner>
+    <span *ngIf="!isLoading">Upload Files</span>
+    <span *ngIf="isLoading">Uploading</span>
+  </button>
+  <ul>
+    <li *ngFor="let fileURL of fileURLs">
+      {{ fileURL }}
+    </li>
+  </ul>

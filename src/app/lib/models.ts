@@ -18,3 +18,16 @@ export interface UploadResource {
     type: PostResourceType;
     file: File;
 }
+
+export interface CardData {
+    title: string;
+    description: string;
+    thumbnail: string;
+    postID: string;
+}
+
+export interface PostFormData {
+    post: Post;
+    thumbnail: File;
+    markdown: File;
+}

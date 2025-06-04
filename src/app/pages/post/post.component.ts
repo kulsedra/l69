@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { MarkdownComponent, MarkdownService } from 'ngx-markdown';
-import { Post } from '../../util/models';
-import { AppwriteClient } from '../../util/AppwriteClient';
+import { Post } from '../../lib/models';
+import { AppwriteClient } from '../../lib/AppwriteClient';
 
 @Component({
   selector: 'app-post',

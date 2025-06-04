@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { environment } from '../environments/environment';
+import { environment } from './environments/environment';
 import { Client, Storage, Databases, ID, Query } from 'appwrite';
 import { Post, PostResource } from './models';
 

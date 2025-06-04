@@ -4,15 +4,10 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { AppwriteClient } from '../../util/AppwriteClient';
+import { AppwriteClient } from '../../lib/AppwriteClient';
 import { Router } from '@angular/router';
-
-interface CardData {
-  title: string;
-  description: string;
-  thumbnail: string;
-  postID: string;
-}
+import { CardData } from '../../lib/models';
+import { PostCardComponent } from "../../components/post-card/post-card.component";
 
 @Component({
   selector: 'app-home',
@@ -23,7 +18,8 @@ interface CardData {
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    CommonModule
+    CommonModule,
+    PostCardComponent
   ],
   standalone: true,
 })
@@ -59,7 +55,7 @@ export class HomeComponent implements OnInit {
     return {
       title: post.title,
       description: post.description,
-      thumbnail: thumbnail || 'assets/default-thumbnail.jpg', // Fallback image if no thumbnail is found
+      thumbnail: thumbnail || 'https://placehold.co/300x200?text=No_image_found', // Fallback image if no thumbnail is found
       postID: post.$id
     };
   }
