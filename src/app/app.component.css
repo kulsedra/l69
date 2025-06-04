@@ -1,13 +1,126 @@
+/* app-toolbar.component.css */
+
+/* Sidenav Container */
+.sidenav-container {
+  height: 100vh;
+  background-color: transparent;
+}
+
+/* App Toolbar */
+.app-toolbar {
+  /* Radialer Verlauf für die Toolbar: Links dunkler, Mitte dunkler, außen wieder heller */
+  background: radial-gradient(circle at left, #3675a3 0%, #ADD8E6 25%, #4682B4 50%, #ADD8E6 75%, #3675a3 100%);
+  /* #3675a3 ist ein dunkleres Blau (für den Start links und Ende rechts) */
+  /* #ADD8E6 ist ein helles Himmelblau (zwischen Start/Ende und Mitte) */
+  /* #4682B4 ist ein SteelBlue (Mittelpunkt, etwas dunkler) */
+
+  color: #ffffff;
+  /* Weiße Schriftfarbe für Kontrast auf dem Blau */
+  padding: 0 24px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Logo-Container (der Rahmen um den Text) */
+.logo-container {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 8px 15px;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.logo-container:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Logo-Text Styling (innerhalb des Rahmens) */
+.logo-text {
+  text-decoration: none;
+  color: #ffffff;
+  /* LOGO TEXT BLEIBT WEISS */
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Spacer */
 .spacer {
   flex: 1 1 auto;
 }
 
-.app-toolbar {
-  background: linear-gradient(to bottom, #d4fc79, #96e6a1);
+/* Über uns Button */
+.about-button {
+  background-color: #ffffff;
+  /* BUTTON IST WEISS */
+  color: #4682B4;
+  /* Textfarbe des Buttons ist das dunklere Blau aus dem Verlauf */
+  border-radius: 4px;
+  padding: 8px 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, color 0.3s ease;
+  min-width: 90px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.mat-toolbar.mat-primary {
-  position: sticky;
-  top: 0;
-  z-index: 1;
+.about-button:hover {
+  background-color: #f0f0f0;
+  color: #366085;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Wrapper für den gesamten App-Inhalt unter der Toolbar */
+.app-content-wrapper {
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 24px;
+  box-sizing: border-box;
+  min-height: calc(100vh - 64px - 48px);
+}
+
+
+@media (max-width: 600px) {
+  .app-toolbar {
+    padding: 0 16px;
+    height: 56px;
+  }
+
+  .logo-container {
+    padding: 6px 12px;
+    height: 36px;
+  }
+
+  .logo-text {
+    font-size: 1rem;
+  }
+
+  .about-button {
+    padding: 6px 16px;
+    font-size: 0.85rem;
+  }
+
+  .app-content-wrapper {
+    padding: 0 16px;
+    margin: 16px auto;
+    min-height: calc(100vh - 56px - 32px);
+  }
+}
+
+@media (max-width: 400px) {
+  .logo-text {
+    font-size: 0.9rem;
+  }
 }

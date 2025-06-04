@@ -1,12 +1,16 @@
-<div class="main">
-    <img class="thumbnail-image" alt="thumbnail" [src]="postThumbnail">
+<div class="blog-post-wrapper">
+    <mat-card class="main">
+        <img mat-card-image class="thumbnail-image" alt="thumbnail" [src]="postThumbnail" />
 
-    <h1>{{ post?.title }}</h1>
+        <mat-card-title class="post-title">{{ post?.title }}</mat-card-title>
 
-    <div>
-        <p>{{ post?.author }}</p>
-        <p> {{ post?.date | date: 'dd.MM.yyyy' }}</p>
-    </div>
+        <mat-card-subtitle class="post-meta">
+            <span class="author">von <strong>{{ post?.author }}</strong></span>
+            <span class="date">{{ post?.date | date: 'dd.MM.yyyy' }}</span>
+        </mat-card-subtitle>
 
-    <markdown [src]="postMarkdown" />
+        <mat-card-content>
+            <markdown [src]="postMarkdown"></markdown>
+        </mat-card-content>
+    </mat-card>
 </div>

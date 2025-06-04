@@ -110,7 +110,7 @@ export const common = (client: AppwriteClient) => {
     const getAllPosts = async (active: boolean): Promise<CardData[]> => {
         try {
             const posts = (await client.getAllPosts())
-                .documents.filter(post => !post[active ? 'active' : 'inactive']);
+                .documents.filter(post => active ? post['active'] : !post['active']);
 
             return await Promise.all(
                 posts.map(post => createCardData(post))

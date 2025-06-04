@@ -5,10 +5,11 @@ import { MarkdownComponent, MarkdownService } from 'ngx-markdown';
 import { Post } from '../../lib/models';
 import { AppwriteClient } from '../../lib/AppwriteClient';
 import { common } from '../../lib/common';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-post',
-  imports: [MarkdownComponent, CommonModule],
+  imports: [MarkdownComponent, MatCardModule, CommonModule],
   templateUrl: './post.component.html',
   styleUrl: './post.component.css'
 })

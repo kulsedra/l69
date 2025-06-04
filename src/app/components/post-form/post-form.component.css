@@ -1,12 +1,133 @@
-.form-container {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    max-width: 600px;
-    margin: 20px;
+/* blog-form.component.css */
+
+/* Container für das Formular (mat-card) */
+.form-card-container {
+  max-width: 700px;
+  width: 95%;
+  padding: 32px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  background-color: #ffffff;
+  margin: 24px auto;
+  /* Diese Regel zentriert es horizontal innerhalb des übergeordneten Containers */
+  box-sizing: border-box;
+  border: none;
+}
+
+/* ... der Rest des blog-form.component.css bleibt wie zuvor ... */
+mat-card-title {
+  color: #333333;
+  margin-bottom: 8px;
+}
+
+mat-card-subtitle {
+  color: #757575;
+  margin-bottom: 24px;
+}
+
+.blog-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+mat-form-field {
+  width: 100%;
+  --mat-form-field-text-color: #333333;
+  --mat-form-field-label-text-color: #757575;
+  --mat-form-field-outline-color: #cccccc;
+  --mat-form-field-outline-hover-color: #9e9e9e;
+  --mat-form-field-outline-focus-color: #6200EE;
+  --mat-form-field-error-text-color: #D32F2F;
+}
+
+.file-inputs {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px dashed #cccccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.file-inputs label {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+  font-size: 0.95rem;
+  color: #757575;
+}
+
+.file-inputs label p {
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #424242;
+}
+
+.file-inputs input[type="file"] {
+  padding: 8px 0;
+  border: 1px solid #dddddd;
+  border-radius: 4px;
+  background-color: #ffffff;
+  color: #333333;
+  cursor: pointer;
+}
+
+.file-inputs hr {
+  border: none;
+  border-top: 1px solid #eeeeee;
+  margin: 20px 0;
+}
+
+.markdown-editor-section {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.markdown-editor-section p {
+  font-weight: 500;
+  margin-bottom: 10px;
+  color: #424242;
+}
+
+button[type="submit"] {
+  width: 100%;
+  height: 48px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-top: 10px;
+  background-color: #6200EE;
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+button[type="submit"]:hover {
+  background-color: #5300d8;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+button[type="submit"] mat-progress-spinner {
+  display: inline-block;
+}
+
+@media (max-width: 768px) {
+  .form-card-container {
+    padding: 24px;
+    width: 90%;
+    margin: 16px auto;
   }
-  
-  .file-inputs label {
-    display: block;
-    margin: 8px 0;
+}
+
+@media (max-width: 480px) {
+  .form-card-container {
+    padding: 16px;
   }
+
+  .blog-form {
+    gap: 15px;
+  }
+
+  .file-inputs {
+    padding: 10px;
+  }
+}

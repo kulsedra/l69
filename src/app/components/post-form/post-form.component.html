@@ -1,68 +1,90 @@
-<form [formGroup]="blogForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data" class="form-container">
+<mat-card class="form-card-container">
 
-  <mat-form-field appearance="outline">
-    <mat-label>Title</mat-label>
-    <input matInput formControlName="title" required />
-  </mat-form-field>
+  <mat-card-title>Blogpost veröffentlichen</mat-card-title>
+  <mat-card-subtitle style="margin-bottom: 30px;">Fülle die Felder aus, um deinen Beitrag zu veröffentlichen.</mat-card-subtitle>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Author</mat-label>
-    <input matInput formControlName="author" required />
-  </mat-form-field>
+  <mat-card-content>
+    <form [formGroup]="blogForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data" class="blog-form">
 
-  <mat-form-field appearance="outline">
-    <mat-label>Date</mat-label>
-    <input matInput [matDatepicker]="picker" formControlName="date" required />
-    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-    <mat-datepicker #picker></mat-datepicker>
-  </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title" required />
+        <mat-error *ngIf="blogForm.get('title')?.hasError('required') && blogForm.get('title')?.touched">
+          Title ist erforderlich.
+        </mat-error>
+      </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Description</mat-label>
-    <textarea matInput formControlName="description" required></textarea>
-  </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Author</mat-label>
+        <input matInput formControlName="author" required />
+        <mat-error *ngIf="blogForm.get('author')?.hasError('required') && blogForm.get('author')?.touched">
+          Author ist erforderlich.
+        </mat-error>
+      </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Category</mat-label>
-    <mat-select formControlName="category" required>
-      <mat-option *ngFor="let category of categories" [value]="category.value">
-        {{ category.label }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date" required />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="blogForm.get('date')?.hasError('required') && blogForm.get('date')?.touched">
+          Datum ist erforderlich.
+        </mat-error>
+      </mat-form-field>
 
-  <div class="file-inputs">
-    <label>
-      <p>Thumbnail image*</p>
-      <input type="file" accept="image/*" (change)="onThumbnailChange($event)" required />
-    </label>
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <textarea matInput formControlName="description" rows="3" required></textarea>
+        <mat-error *ngIf="blogForm.get('description')?.hasError('required') && blogForm.get('description')?.touched">
+          Beschreibung ist erforderlich.
+        </mat-error>
+      </mat-form-field>
 
-    <ng-content select="[slot=thumbnailUpload]"></ng-content>
+      <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select formControlName="category" required>
+          <mat-option *ngFor="let category of categories" [value]="category.value">
+            {{ category.label }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="blogForm.get('category')?.hasError('required') && blogForm.get('category')?.touched">
+          Kategorie ist erforderlich.
+        </mat-error>
+      </mat-form-field>
 
-    <hr>
+      <div class="file-inputs">
+        <label>
+          <p>Thumbnail-Bild*</p>
+          <input type="file" accept="image/*" (change)="onThumbnailChange($event)" required />
+        </label>
 
-    <label>
-      <p>Upload Files to get an URL that you can put into your markdown</p>
-      <input type="file" multiple (change)="onAdditionalFilesChange($event)" />
-    </label>
+        <ng-content select="[slot=thumbnailUpload]"></ng-content>
 
-    <app-file-url *ngIf="additionalFiles.length > 0" [files]="additionalFiles" />
+        <hr>
 
-    <hr>
-  </div>
+        <label>
+          <p>Lade zusätzliche Dateien hoch, um URLs für deinen Markdown-Text zu erhalten</p>
+          <input type="file" multiple (change)="onAdditionalFilesChange($event)" />
+        </label>
 
-  <div>
-    <p>Create your post*</p>
-    <angular-markdown-editor textareaId="blogPost" name="markdownText" [(ngModel)]="markdownText"
-      [options]="editorOptions" [ngModelOptions]="{ standalone: true }"></angular-markdown-editor>
-  </div>
+        <app-file-url *ngIf="additionalFiles.length > 0" [files]="additionalFiles" />
 
+        <hr>
+      </div>
 
-  <button mat-flat-button color="primary" type="submit" [disabled]="isLoading || blogForm.invalid">
-    <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="20" color="accent"
-      style="vertical-align: middle; margin-right: 8px;">
-    </mat-progress-spinner>
-    <span *ngIf="!isLoading">Submit</span>
-    <span *ngIf="isLoading">Submitting…</span>
-  </button>
-</form>
+      <div class="markdown-editor-section">
+        <p>Erstelle deinen Post*</p>
+        <angular-markdown-editor textareaId="blogPost" name="markdownText" [(ngModel)]="markdownText"
+          [options]="editorOptions" [ngModelOptions]="{ standalone: true }"></angular-markdown-editor>
+      </div>
+
+      <button mat-flat-button color="primary" type="submit" [disabled]="isLoading || blogForm.invalid">
+        <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="20" color="accent"
+          style="vertical-align: middle; margin-right: 8px;">
+        </mat-progress-spinner>
+        <span *ngIf="!isLoading">Absenden</span>
+        <span *ngIf="isLoading">Wird gesendet…</span>
+      </button>
+    </form>
+  </mat-card-content>
+</mat-card>

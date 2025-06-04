@@ -1,12 +1,113 @@
+/* blog-post.component.css */
+
+/* Dieser Wrapper ist speziell dafür da, den EINZELNEN Blogpost zu zentrieren */
+.blog-post-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Vertikale Zentrierung */
+    min-height: calc(100vh - 64px - 48px);
+    /* Mindesthöhe, um die Toolbar und Margins zu berücksichtigen */
+    width: 100%;
+    padding: 24px 0;
+    box-sizing: border-box;
+    overflow-y: auto;
+    /* Erlaubt Scrollen, wenn der Inhalt zu lang ist */
+}
+
+/* Hauptcontainer für den Blogpost (mat-card) */
+.main {
+    background-color: #ffffff;
+    max-width: 800px;
+    width: 100%;
+    padding: 32px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    margin: 0;
+    /* Wichtig: margin hier 0, damit der Wrapper es zentriert */
+    border: none;
+}
+
+/* ... der Rest des blog-post.component.css bleibt wie zuvor ... */
 .thumbnail-image {
-    max-width: 100%;
-    max-height: 80vh;
-    margin: auto;
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    object-fit: cover;
+    max-height: 400px;
     display: block;
 }
 
-.main {
-    margin: auto;
+.post-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #333333;
+    line-height: 1.15;
+    text-align: center;
+}
+
+.post-meta {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    color: #757575;
+    font-size: 0.95rem;
+    margin-bottom: 32px;
+    font-weight: 500;
+}
+
+.post-meta .author strong {
+    font-weight: 700;
+    color: #555555;
+}
+
+markdown {
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: #424242;
     display: block;
-    max-width: 700px;
+}
+
+@media (max-width: 960px) {
+    .main {
+        padding: 24px 32px;
+    }
+
+    .post-title {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .blog-post-wrapper {
+        padding: 16px 0;
+        min-height: calc(100vh - 56px - 32px);
+        /* Angepasst für mobile Toolbar-Höhe und Margin */
+    }
+
+    .main {
+        padding: 24px;
+    }
+
+    .post-title {
+        font-size: 2rem;
+        text-align: left;
+    }
+
+    .post-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        margin-bottom: 24px;
+    }
+
+    .thumbnail-image {
+        margin-bottom: 16px;
+    }
+
+    markdown {
+        font-size: 1rem;
+    }
 }

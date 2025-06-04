@@ -12,6 +12,7 @@ import { AngularMarkdownEditorModule } from 'angular-markdown-editor';
 import { MarkdownService } from 'ngx-markdown';
 import { Post, PostFormData } from '../../lib/models';
 import { FileUrlComponent } from "../file-url/file-url.component";
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-post-form',
@@ -27,7 +28,8 @@ import { FileUrlComponent } from "../file-url/file-url.component";
     MatProgressSpinnerModule,
     AngularMarkdownEditorModule,
     FormsModule,
-    FileUrlComponent
+    FileUrlComponent,
+    MatCardModule
   ],
   templateUrl: './post-form.component.html',
   styleUrl: './post-form.component.css'
