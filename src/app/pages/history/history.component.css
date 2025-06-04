@@ -1,9 +1,6 @@
-mat-card img {
-    max-height: 300px;
-    width: 700px;
-    object-fit: cover;
-  }
-  
-  mat-card {
-    margin-bottom: 50px;
-  }
+.post-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  padding: 16px;
+}

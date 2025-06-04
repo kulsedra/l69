@@ -35,7 +35,7 @@ export class HomeComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     const { getAllPosts } = common(this.client);
 
-    this.cardData = await getAllPosts(false);
+    this.cardData = await getAllPosts(true);
   }
 
   goToPost(postID: string) {

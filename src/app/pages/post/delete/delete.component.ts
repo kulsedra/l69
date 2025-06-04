@@ -4,10 +4,12 @@ import { ActivatedRoute } from '@angular/router';
 import { AppwriteClient } from '../../../lib/AppwriteClient';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MatCard, MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-delete',
   imports: [
+    MatCardModule,
     MatButtonModule,
     MatProgressSpinnerModule,
     CommonModule

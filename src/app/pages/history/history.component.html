@@ -1,14 +1,11 @@
-<div class="grid-container">
-  <mat-grid-list cols="2" rowHeight="2:1">
-    <mat-grid-tile *ngFor="let card of cardData" [colspan]="2" [rowspan]="1">
-      <app-post-card (click)="goToPost(card.postID)" [card]="card" />
-      <button (click)="activatePost(card.postID)" type="button" mat-flat-button color="primary" [disabled]="isLoading">
-        <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="20" color="accent"
-          style="vertical-align: middle; margin-right: 8px;">
-        </mat-progress-spinner>
-        <span *ngIf="!isLoading">Reactivate post</span>
-        <span *ngIf="isLoading">Reactivating...</span>
-      </button>
-    </mat-grid-tile>
-  </mat-grid-list>
+<div class="post-grid">
+  <app-post-card *ngFor="let card of cardData" [card]="card" (click)="goToPost(card.postID)">
+    <button (click)="activatePost(card.postID); $event.stopPropagation()" type="button" mat-flat-button color="warn"
+      [disabled]="isLoading">
+      <mat-progress-spinner *ngIf="isLoading" mode="indeterminate" diameter="20" color="accent"
+        style="vertical-align: middle; margin-right: 8px"></mat-progress-spinner>
+      <span *ngIf="!isLoading">Reactivate post</span>
+      <span *ngIf="isLoading">Reactivating...</span>
+    </button>
+  </app-post-card>
 </div>

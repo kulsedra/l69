@@ -1,0 +1,72 @@
+.delete-post-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    background: #f9f9f9;
+    padding: 16px;
+}
+
+.delete-post-card {
+    width: 100%;
+    max-width: 360px;
+    border-radius: 16px;
+    padding: 24px;
+    background-color: #fff;
+}
+
+.title {
+    margin-bottom: 8px;
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.message {
+    margin-bottom: 20px;
+    color: #555;
+    text-align: center;
+}
+
+.actions {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.delete-button {
+    background-color: #d32f2f;
+    color: white;
+    min-width: 120px;
+    height: 36px;
+    font-size: 0.875rem;
+
+    &:hover {
+        background-color: #b71c1c;
+    }
+
+    &:disabled {
+        background-color: #ef9a9a;
+        color: white;
+    }
+}
+
+.spinner {
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+.info-text {
+    font-size: 0.85rem;
+    color: #888;
+    text-align: center;
+
+    a {
+        color: #1976d2;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

@@ -1,5 +1,13 @@
-<mat-card *ngIf="card">
-    <img mat-card-image [src]="card.thumbnail" alt="">
+<mat-card *ngIf="card" class="post-card">
+    <img mat-card-image [src]="card.thumbnail" alt="Post image" />
+
     <mat-card-title>{{ card.title }}</mat-card-title>
-    <mat-card-content>{{ card.description }}</mat-card-content>
+
+    <mat-card-content>
+        {{ card.description }}
+    </mat-card-content>
+
+    <div class="card-actions">
+        <ng-content></ng-content>
+    </div>
 </mat-card>
