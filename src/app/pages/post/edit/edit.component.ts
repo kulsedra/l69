@@ -1,131 +1,47 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { Post, PostResource, PostResourceType, UploadResource } from '../../../lib/models';
+import { Post, PostFormData, PostResourceType } from '../../../lib/models';
 import { AppwriteClient } from '../../../lib/AppwriteClient';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { AngularMarkdownEditorModule } from 'angular-markdown-editor';
-import { FormsModule } from '@angular/forms';
-import { MarkdownService } from 'ngx-markdown';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { PostFormComponent } from "../../../components/post-form/post-form.component";
+import { common } from '../../../lib/common';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-edit',
   templateUrl: './edit.component.html',
   styleUrls: ['./edit.component.css'],
   imports: [
-    ReactiveFormsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatButtonModule,
-    MatSelectModule,
-    CommonModule,
-    MatProgressSpinnerModule,
-    AngularMarkdownEditorModule,
-    FormsModule,
-    PostFormComponent
-],
+    PostFormComponent,
+    CommonModule
+  ],
 })
 export class EditComponent implements OnInit {
   postId: string = '';
+
+  postFormData: PostFormData | null = null;
+
   thumbnailPreviewUrl: string | null = null;
-  imageURLs: string[] = [];
-  editorOptions: any;
-  markdownText: string = '';
+
   isLoading = false;
+
   client = new AppwriteClient();
-  blogForm: FormGroup;
-  thumbnailFile: File | null = null;
-  additionalFiles: File[] = [];
-  categories = [
-    { label: 'Events', value: 'events' },
-    { label: 'News', value: 'news' },
-    { label: 'Backstage', value: 'backstage' },
-    { label: 'Other', value: 'other' }
-  ];
 
-  constructor(private fb: FormBuilder, private markdownService: MarkdownService, private route: ActivatedRoute, private http: HttpClient) {
-    this.blogForm = this.fb.group({
-      title: ['', Validators.required],
-      description: ['', Validators.required],
-      date: ['', Validators.required],
-      author: ['', Validators.required],
-      category: ['', Validators.required]
-    });
+  constructor(private route: ActivatedRoute, private http: HttpClient) { }
 
-  }
-
-  onThumbnailChange(event: any) {
-    this.thumbnailFile = event.target.files[0];
-
+  onThumbnailChange() {
     this.thumbnailPreviewUrl = null;
   }
 
-  onAdditionalFilesChange(event: any) {
-    this.additionalFiles = Array.from(event.target.files);
-  }
-
-  async onSubmit() {
-    if (this.blogForm.invalid || !this.thumbnailFile || !this.markdownText) {
-      alert('mädchen bist du dumm oder kommst du jetzt klar?');
-      return;
-    }
-
+  async onSubmit(postFormData: PostFormData) {
     this.isLoading = true;
 
-    const post: Post = {
-      title: this.blogForm.value.title,
-      author: this.blogForm.value.author,
-      description: this.blogForm.value.description,
-      date: this.blogForm.value.date,
-      category: this.blogForm.value.category
-    }
+    const { submitPost } = common(this.client);
 
-    const postResult = await this.createPost(post)
+    const postRef = await submitPost(postFormData);
 
-    if (!postResult) {
-      alert('Error creating post, check console for details');
-
-      this.isLoading = false;
-
-      return;
-    }
-
-    const thumbnail = {
-      type: 'post_thumbnail_storage_link' as PostResourceType,
-      file: this.thumbnailFile
-    }
-
-    const thumbnailResource = await this.uploadFile(thumbnail, postResult);
-
-    if (!thumbnailResource) {
-      alert('Error uploading thumbnail, check console for details');
-
-      this.isLoading = false;
-
-      return;
-    }
-
-    const markdown = {
-      type: 'post_markdown_storage_link' as PostResourceType,
-      file: new File([this.markdownText], `${crypto.randomUUID()}.md`, { type: "text/markdown" })
-    }
-
-    const markdownResource = await this.uploadFile(markdown, postResult);
-
-    if (!markdownResource) {
-      alert('Error uploading markdown, check console for details');
+    if (!postRef) {
+      alert('Error submitting post, check console for details');
 
       this.isLoading = false;
 
@@ -134,79 +50,74 @@ export class EditComponent implements OnInit {
 
     // Inactivate old post
 
-    if (this.postId) {
-      try {
-        await this.client.inactivatePost(this.postId);
-      }
-      catch (error) {
-        console.error('Error inactivating old post:', error);
+    try {
+      await this.client.inactivatePost(this.postId);
+    }
+    catch (error) {
+      console.error('Error inactivating old post:', error);
 
-        alert('Error inactivating old post, check console for details');
-      }
+      alert('Error inactivating old post, check console for details');
+
+      return;
+    }
+    finally {
+      this.isLoading = false;
     }
 
-    this.isLoading = false;
-
-    alert('Post updated successfully!');
-
-    window.location.href = '/';
+    window.location.href = `/post/${postRef}`;
   }
 
-  async createPost(post: Post): Promise<string | null> {
-    try {
-      const postId = await this.client.createPost(post);
-      return postId.$id;
-    } catch (error) {
-      console.error('Error creating post:', error);
-      return null
+  async downloadMarkdownContent(): Promise<string | null> {
+    const markdown = await this.client.getPostMarkdown(this.postId);
+
+    if (!markdown || markdown.documents.length === 0) {
+      console.error('No markdown found for post:', this.postId);
+
+      return null;
     }
-  }
 
-  async uploadFile(uploadResource: UploadResource, postID: string): Promise<PostResource | null> {
+    const markdownFile = await this.client.downloadPostResource(markdown.documents[0]['storage_link']);
+
+    if (!markdownFile) {
+      console.error('No file URL found for markdown:', markdown.documents[0]['storage_link']);
+
+      return null;
+    }
+
     try {
-      const fileRef = await this.client.uploadPostResource(uploadResource.file);
+      const data = await this.http.get(markdownFile, { responseType: 'text' }).toPromise();
 
-      const postResource: PostResource = {
-        type: uploadResource.type,
-        storage_link: fileRef.$id,
-        post: postID
-      };
-
-      await this.client.createPostResource(postResource);
-
-      return postResource;
-    } catch (error) {
-      console.error('Error uploading file:', error);
-
+      return data || null;
+    } catch (err) {
+      console.error('Error loading markdown file:', err);
       return null;
     }
   }
 
-  async uploadFiles(): Promise<void> {
+  async downloadThumbnail(): Promise<{ file: File, fileURL: string } | null> {
+    const thumbnail = await this.client.getPostThumbnail(this.postId);
 
-    if (this.additionalFiles.length === 0) {
-      alert('No additional files selected.');
-
-      return;
+    if (!thumbnail || thumbnail.documents.length === 0) {
+      console.error('No thumbnail found for post:', this.postId);
+      return null;
     }
 
-    const imageFiles = this.additionalFiles.map(file =>
-      this.client.uploadPostResource(file));
+    const fileURL = await this.client.downloadPostResource(thumbnail.documents[0]['storage_link']);
 
-
-    this.isLoading = true;
+    if (!fileURL) {
+      console.error('No file URL found for thumbnail:', thumbnail.documents[0]['storage_link']);
+      return null;
+    }
 
     try {
-      const fileUploadRefs = (await Promise.all(imageFiles)).map(fileRef => fileRef.$id);
+      const blob = await this.http.get(fileURL, { responseType: 'blob' }).toPromise();
 
-      this.imageURLs = (await Promise.all(fileUploadRefs.map(id => this.client.downloadPostResource(id))))
-    } catch (error) {
-      console.error('Error uploading files:', error);
+      const file = new File([blob!], 'thumbnail', { type: blob?.type || 'image/png' });
 
-      alert('Error uploading files, check console for details');
-    }
-    finally {
-      this.isLoading = false;
+      return { file, fileURL };
+    } catch (err) {
+      console.error('Fehler beim Laden des Bildes:', err);
+      return null;
     }
   }
 
@@ -222,50 +133,28 @@ export class EditComponent implements OnInit {
         return;
       }
 
-      this.blogForm.patchValue({
-        title: post['title'],
-        date: post['date'],
-        author: post['author'],
-        description: post['description'],
-        category: post['category']
-      });
+      const downloadThumbnailResult = await this.downloadThumbnail();
 
-      const thumbnail = await this.client.getPostThumbnail(postId);
+      if (!downloadThumbnailResult) {
+        alert('Error loading thumbnail, check console for details');
 
-      if (thumbnail.documents.length > 0) {
-        const fileUrl = await this.client.downloadPostResource(thumbnail.documents[0]['storage_link']);
-
-        this.thumbnailPreviewUrl = fileUrl;
-
-        if (fileUrl) {
-          this.http.get(fileUrl, { responseType: 'blob' }).subscribe({
-            next: (blob: Blob) => {
-              const file = new File([blob], 'thumbnail', { type: blob.type || 'image' });
-
-              this.thumbnailFile = file;
-            },
-            error: (err) => {
-              console.error('Fehler beim Laden des Bildes:', err);
-            }
-          });
-        }
+        return;
       }
 
-      const markdown = await this.client.getPostMarkdown(postId);
+      this.thumbnailPreviewUrl = downloadThumbnailResult.fileURL;
 
-      if (markdown.documents.length > 0) {
-        const markdownFile = await this.client.downloadPostResource(markdown.documents[0]['storage_link']);
+      const markdownContent = await this.downloadMarkdownContent();
 
-        if (markdownFile) {
-          this.http.get(markdownFile, { responseType: 'text' }).subscribe({
-            next: (data: string) => {
-              this.markdownText = data;
-            },
-            error: (err) => {
-              console.error('Error loading markdown file:', err);
-            }
-          });
-        }
+      if (markdownContent === null) {
+        alert('Error loading markdown content, check console for details');
+
+        return;
+      }
+
+      this.postFormData = {
+        post: post as unknown as Post,
+        thumbnail: downloadThumbnailResult.file,
+        markdown: markdownContent
       }
     } catch (error) {
       console.error('Error loading post:', error);
@@ -277,10 +166,6 @@ export class EditComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.editorOptions = {
-      parser: (val: string) => this.markdownService.parse(val.trim())
-    };
-
     this.postId = this.route.snapshot.paramMap.get('id') || '';
 
     if (this.postId) {

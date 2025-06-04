@@ -33,6 +33,6 @@ export class AppComponent {
     );
 
   goToAboutPage() {
-    window.location.href = 'https://l69.ch/about';
+    window.location.href = '/about';
   }
 }

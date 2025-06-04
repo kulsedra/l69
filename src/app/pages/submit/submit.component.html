@@ -1,1 +1,1 @@
-<app-post-form [isLoading]="isLoading" />
+<app-post-form (formSubmit)="onSubmit($event)" [isLoading]="isLoading" />

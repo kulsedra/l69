@@ -29,5 +29,5 @@ export interface CardData {
 export interface PostFormData {
     post: Post;
     thumbnail: File;
-    markdown: File;
+    markdown: File | string;
 }

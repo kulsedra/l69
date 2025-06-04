@@ -1,4 +1,4 @@
-<app-post-form [isLoading]="isLoading">
+<app-post-form *ngIf="postFormData" (formSubmit)="onSubmit($event)" (thumbnailChange)="onThumbnailChange()" [postFormData]="postFormData" [isLoading]="isLoading">
   <div slot="thumbnailUpload">
     <img *ngIf="thumbnailPreviewUrl" [src]="thumbnailPreviewUrl" alt="Vorschau"
       style="max-width: 200px; display: block; margin-top: 10px;" />

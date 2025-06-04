@@ -28,14 +28,18 @@ import { FileUrlComponent } from "../file-url/file-url.component";
     AngularMarkdownEditorModule,
     FormsModule,
     FileUrlComponent
-],
+  ],
   templateUrl: './post-form.component.html',
   styleUrl: './post-form.component.css'
 })
 export class PostFormComponent implements OnInit {
+  @Input() postFormData: PostFormData | null = null;
+
   @Input() isLoading = false;
 
-  @Output() submit = new EventEmitter<PostFormData>();
+  @Output() formSubmit = new EventEmitter<PostFormData>();
+
+  @Output() thumbnailChange = new EventEmitter<void>();
 
   blogForm: FormGroup;
 
@@ -81,7 +85,7 @@ export class PostFormComponent implements OnInit {
       category: this.blogForm.value.category
     }
 
-    this.submit.emit({
+    this.formSubmit.emit({
       post,
       thumbnail: this.thumbnailFile,
       markdown: new File([this.markdownText], `${crypto.randomUUID()}.md`, { type: 'text/markdown' }),
@@ -90,6 +94,8 @@ export class PostFormComponent implements OnInit {
 
   onThumbnailChange(event: any) {
     this.thumbnailFile = event.target.files[0];
+
+    this.thumbnailChange.emit();
   }
 
   onAdditionalFilesChange(event: any) {
@@ -100,5 +106,19 @@ export class PostFormComponent implements OnInit {
     this.editorOptions = {
       parser: (val: string) => this.markdownService.parse(val.trim())
     };
+
+    if (this.postFormData) {
+      this.blogForm.patchValue({
+        title: this.postFormData.post.title,
+        description: this.postFormData.post.description,
+        date: this.postFormData.post.date,
+        author: this.postFormData.post.author,
+        category: this.postFormData.post.category
+      });
+
+      this.thumbnailFile = this.postFormData.thumbnail;
+
+      this.markdownText = typeof this.postFormData.markdown === 'string' ? this.postFormData.markdown : '';
+    }
   }
 }
