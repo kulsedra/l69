@@ -4,6 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MarkdownComponent, MarkdownService } from 'ngx-markdown';
 import { Post } from '../../lib/models';
 import { AppwriteClient } from '../../lib/AppwriteClient';
+import { common } from '../../lib/common';
 
 @Component({
   selector: 'app-post',
@@ -33,36 +34,10 @@ export class PostComponent implements OnInit {
 
     this.post = await this.client.getPost(this.postId) as unknown as Post;
 
-    this.postThumbnail = await this.downloadPostThumbnail(this.postId);
+    const { downloadPostThumbnail, downloadPostMarkdown } = common(this.client);
 
-    this.postMarkdown = await this.downloadPostMarkdown(this.postId);
-  }
+    this.postThumbnail = await downloadPostThumbnail(this.postId);
 
-  private async downloadPostThumbnail(postId: string): Promise<string | null> {
-    const resources = await this.client.getPostThumbnail(postId);
-
-    if (resources.documents.length === 0) {
-      console.warn('No thumbnail found for post:', postId);
-
-      return null;
-    }
-
-    const thumbnailLink = resources.documents[0]['storage_link'];
-
-    return await this.client.downloadPostResource(thumbnailLink);
-  }
-
-  private async downloadPostMarkdown(postId: string): Promise<string | null> {
-    const resources = await this.client.getPostMarkdown(postId);
-
-    if (resources.documents.length === 0) {
-      console.warn('No markdown found for post:', postId);
-
-      return null;
-    }
-
-    const markdownLink = resources.documents[0]['storage_link'];
-
-    return await this.client.downloadPostResource(markdownLink);
+    this.postMarkdown = await downloadPostMarkdown(this.postId);
   }
 }

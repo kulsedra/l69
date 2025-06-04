@@ -1,5 +1,6 @@
+import { async } from "rxjs";
 import { AppwriteClient } from "./AppwriteClient";
-import { Post, PostFormData, PostResource, PostResourceType, UploadResource } from "./models";
+import { CardData, Post, PostFormData, PostResource, PostResourceType, UploadResource } from "./models";
 
 export const common = (client: AppwriteClient) => {
     const createPost = async (post: Post): Promise<string | null> => {
@@ -67,7 +68,65 @@ export const common = (client: AppwriteClient) => {
         return postResult;
     }
 
+    const createCardData = async (post: any): Promise<CardData> => {
+        const thumbnail = await downloadPostThumbnail(post.$id);
+
+        return {
+            title: post.title,
+            description: post.description,
+            thumbnail: thumbnail || 'https://placehold.co/300x200?text=No_image_found', // Fallback image if no thumbnail is found
+            postID: post.$id
+        };
+    }
+
+    const downloadPostThumbnail = async (postId: string): Promise<string | null> => {
+        const resources = await client.getPostThumbnail(postId);
+
+        if (resources.documents.length === 0) {
+            console.warn('No thumbnail found for post:', postId);
+
+            return null;
+        }
+
+        const thumbnailLink = resources.documents[0]['storage_link'];
+
+        return await client.downloadPostResource(thumbnailLink);
+    }
+
+    const downloadPostMarkdown = async (postId: string): Promise<string | null> => {
+        const resources = await client.getPostMarkdown(postId);
+
+        if (resources.documents.length === 0) {
+            console.warn('No markdown found for post:', postId);
+
+            return null;
+        }
+
+        const markdownLink = resources.documents[0]['storage_link'];
+
+        return await client.downloadPostResource(markdownLink);
+    }
+
+    const getAllPosts = async (active: boolean): Promise<CardData[]> => {
+        try {
+            const posts = (await client.getAllPosts())
+                .documents.filter(post => !post[active ? 'active' : 'inactive']);
+
+            return await Promise.all(
+                posts.map(post => createCardData(post))
+            );
+
+        } catch (error) {
+            console.error('Fehler beim Laden der Posts:', error);
+
+            return [];
+        }
+    }
+
     return {
-        submitPost
+        submitPost,
+        getAllPosts,
+        downloadPostThumbnail,
+        downloadPostMarkdown,
     };
 }

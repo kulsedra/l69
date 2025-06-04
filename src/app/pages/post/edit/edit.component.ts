@@ -68,24 +68,16 @@ export class EditComponent implements OnInit {
   }
 
   async downloadMarkdownContent(): Promise<string | null> {
-    const markdown = await this.client.getPostMarkdown(this.postId);
+    const { downloadPostMarkdown } = common(this.client);
 
-    if (!markdown || markdown.documents.length === 0) {
-      console.error('No markdown found for post:', this.postId);
+    const markdown = await downloadPostMarkdown(this.postId);
 
-      return null;
-    }
-
-    const markdownFile = await this.client.downloadPostResource(markdown.documents[0]['storage_link']);
-
-    if (!markdownFile) {
-      console.error('No file URL found for markdown:', markdown.documents[0]['storage_link']);
-
+    if (!markdown) {
       return null;
     }
 
     try {
-      const data = await this.http.get(markdownFile, { responseType: 'text' }).toPromise();
+      const data = await this.http.get(markdown, { responseType: 'text' }).toPromise();
 
       return data || null;
     } catch (err) {
@@ -95,28 +87,23 @@ export class EditComponent implements OnInit {
   }
 
   async downloadThumbnail(): Promise<{ file: File, fileURL: string } | null> {
-    const thumbnail = await this.client.getPostThumbnail(this.postId);
+    const { downloadPostThumbnail } = common(this.client);
 
-    if (!thumbnail || thumbnail.documents.length === 0) {
-      console.error('No thumbnail found for post:', this.postId);
-      return null;
-    }
+    const thumbnail = await downloadPostThumbnail(this.postId);
 
-    const fileURL = await this.client.downloadPostResource(thumbnail.documents[0]['storage_link']);
-
-    if (!fileURL) {
-      console.error('No file URL found for thumbnail:', thumbnail.documents[0]['storage_link']);
+    if (!thumbnail) {
       return null;
     }
 
     try {
-      const blob = await this.http.get(fileURL, { responseType: 'blob' }).toPromise();
+      const blob = await this.http.get(thumbnail, { responseType: 'blob' }).toPromise();
 
-      const file = new File([blob!], 'thumbnail', { type: blob?.type || 'image/png' });
+      const file = new File([blob!], 'thumbnail', { type: blob?.type || 'image/*' });
 
-      return { file, fileURL };
+      return { file: file, fileURL: thumbnail };
     } catch (err) {
       console.error('Fehler beim Laden des Bildes:', err);
+
       return null;
     }
   }

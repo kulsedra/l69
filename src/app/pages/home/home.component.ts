@@ -8,6 +8,7 @@ import { AppwriteClient } from '../../lib/AppwriteClient';
 import { Router } from '@angular/router';
 import { CardData } from '../../lib/models';
 import { PostCardComponent } from "../../components/post-card/post-card.component";
+import { common } from '../../lib/common';
 
 @Component({
   selector: 'app-home',
@@ -32,45 +33,12 @@ export class HomeComponent implements OnInit {
   constructor(private router: Router) { }
 
   async ngOnInit(): Promise<void> {
-    try {
-      const posts = (await this.client.getAllPosts())
-        .documents.filter(post => post['active']);
+    const { getAllPosts } = common(this.client);
 
-      this.cardData = await Promise.all(
-        posts.map(post => this.createCardData(post))
-      );
-
-    } catch (error) {
-      console.error('Fehler beim Laden der Posts:', error);
-    }
+    this.cardData = await getAllPosts(false);
   }
 
   goToPost(postID: string) {
     this.router.navigate(['/post', postID]);
-  }
-
-  private async createCardData(post: any): Promise<CardData> {
-    const thumbnail = await this.downloadPostThumbnail(post.$id);
-
-    return {
-      title: post.title,
-      description: post.description,
-      thumbnail: thumbnail || 'https://placehold.co/300x200?text=No_image_found', // Fallback image if no thumbnail is found
-      postID: post.$id
-    };
-  }
-
-  private async downloadPostThumbnail(postId: string): Promise<string | null> {
-    const resources = await this.client.getPostThumbnail(postId);
-
-    if (resources.documents.length === 0) {
-      console.warn('No thumbnail found for post:', postId);
-
-      return null;
-    }
-
-    const thumbnailLink = resources.documents[0]['storage_link'];
-
-    return await this.client.downloadPostResource(thumbnailLink);
   }
 }

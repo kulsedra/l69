@@ -8,6 +8,7 @@ import { AppwriteClient } from '../../lib/AppwriteClient';
 import { Router } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PostCardComponent } from "../../components/post-card/post-card.component";
+import { common } from '../../lib/common';
 
 interface CardData {
   title: string;
@@ -28,7 +29,7 @@ interface CardData {
     CommonModule,
     MatProgressSpinnerModule,
     PostCardComponent
-],
+  ],
   standalone: true,
 })
 export class HistoryComponent implements OnInit {
@@ -42,23 +43,10 @@ export class HistoryComponent implements OnInit {
   constructor(private router: Router) { }
 
   async ngOnInit(): Promise<void> {
-    await this.getAllPosts();
+    const { getAllPosts } = common(this.client);
+
+    this.cardData = await getAllPosts(false);
   }
-
-  async getAllPosts() {
-    try {
-      const posts = (await this.client.getAllPosts())
-        .documents.filter(post => !post['active']);
-
-      this.cardData = await Promise.all(
-        posts.map(post => this.createCardData(post))
-      );
-
-    } catch (error) {
-      console.error('Fehler beim Laden der Posts:', error);
-    }
-  }
-
 
   async activatePost(postID: string) {
     this.isLoading = true;
@@ -68,7 +56,9 @@ export class HistoryComponent implements OnInit {
 
       alert('Post activated successfully!');
 
-      await this.getAllPosts();
+      const { getAllPosts } = common(this.client);
+
+      this.cardData = await getAllPosts(false);
     } catch (error) {
       alert('Error activating post. Check console for details.');
 
@@ -80,30 +70,5 @@ export class HistoryComponent implements OnInit {
 
   goToPost(postID: string) {
     this.router.navigate(['/post', postID]);
-  }
-
-  private async createCardData(post: any): Promise<CardData> {
-    const thumbnail = await this.downloadPostThumbnail(post.$id);
-
-    return {
-      title: post.title,
-      description: post.description,
-      thumbnail: thumbnail || 'assets/default-thumbnail.jpg', // Fallback image if no thumbnail is found
-      postID: post.$id
-    };
-  }
-
-  private async downloadPostThumbnail(postId: string): Promise<string | null> {
-    const resources = await this.client.getPostThumbnail(postId);
-
-    if (resources.documents.length === 0) {
-      console.warn('No thumbnail found for post:', postId);
-
-      return null;
-    }
-
-    const thumbnailLink = resources.documents[0]['storage_link'];
-
-    return await this.client.downloadPostResource(thumbnailLink);
   }
 }
