@@ -1,0 +1,8 @@
+<div *ngIf="audioUrl" class="audio-container">
+    <h4>🎧 Audio zum Blogpost</h4>
+    <audio [src]="audioUrl" controls></audio>
+  </div>
+  <div *ngIf="!audioUrl" class="audio-container">
+    <p>Kein Audio verfügbar.</p>
+  </div>
+  

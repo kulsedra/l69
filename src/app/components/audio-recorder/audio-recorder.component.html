@@ -1,0 +1,20 @@
+<div class="recorder">
+    <h2>🎙 Audio Recorder</h2>
+  
+    <div *ngIf="isRecording && !isPaused" class="recording-indicator">
+      🔴 Aufnahme läuft – {{ formatTime(timer) }}
+    </div>
+  
+    <button (click)="start()" type="button" [disabled]="isRecording">Start</button>
+    <button (click)="pause()" type="button" [disabled]="!isRecording || isPaused">Pause</button>
+    <button (click)="resume()" type="button" [disabled]="!isPaused">Resume</button>
+    <button (click)="stop()" type="button" [disabled]="!isRecording">Stop</button>
+  
+    <div *ngIf="audioURL">
+      <h3>Playback:</h3>
+      <audio [src]="audioURL" controls></audio>
+    </div>
+  
+    <div *ngIf="error" class="error">{{ error }}</div>
+  </div>
+  

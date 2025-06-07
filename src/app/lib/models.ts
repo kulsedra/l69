@@ -6,7 +6,7 @@ export interface Post {
     category: 'events' | 'news' | 'backstage' | 'other';
 }
 
-export type PostResourceType = 'post_thumbnail_storage_link' | 'post_picture_storage_link' | 'post_markdown_storage_link';
+export type PostResourceType = 'post_thumbnail_storage_link' | 'post_picture_storage_link' | 'post_markdown_storage_link' | 'post_audio_storage_link';
 
 export interface PostResource {
     type: PostResourceType;
@@ -29,5 +29,6 @@ export interface CardData {
 export interface PostFormData {
     post: Post;
     thumbnail: File;
+    audio?: File;
     markdown: File | string;
 }
