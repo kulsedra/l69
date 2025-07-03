@@ -1,3 +1,22 @@
+
+<header>
+  
+
+
+        <h4> <mat-form-field>
+          <mat-label>Filter</mat-label>
+          
+          <mat-select (selectionChange)="onFilterChange($event)">
+             <mat-option value="all">all</mat-option>
+            @for (category of category ; track $index) {
+              <mat-option [value]="category">{{ category }}</mat-option>
+            }
+            </mat-select>
+
+        </mat-form-field></h4>
+</header>
 <div class="post-grid">
-  <app-post-card *ngFor="let card of cardData" [card]="card" (click)="goToPost(card.postID)"></app-post-card>
+  <app-post-card *ngFor="let card of displayCards" [card]="card" (click)="goToPost(card.postID)">
+
+  </app-post-card>
 </div>

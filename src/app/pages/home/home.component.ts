@@ -6,9 +6,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { AppwriteClient } from '../../lib/AppwriteClient';
 import { Router } from '@angular/router';
-import { CardData } from '../../lib/models';
+import { CardData, Category } from '../../lib/models';
 import { PostCardComponent } from "../../components/post-card/post-card.component";
 import { common } from '../../lib/common';
+import { MatFormField, MatLabel } from '@angular/material/form-field';
+import { MatOption, MatSelect } from '@angular/material/select';
+import { MatSelectChange } from '@angular/material/select';
 
 @Component({
   selector: 'app-home',
@@ -20,7 +23,11 @@ import { common } from '../../lib/common';
     MatButtonModule,
     MatIconModule,
     CommonModule,
-    PostCardComponent
+    PostCardComponent,
+    MatFormField, 
+    MatLabel,
+    MatSelect,
+    MatOption
   ],
   standalone: true,
 })
@@ -29,6 +36,8 @@ export class HomeComponent implements OnInit {
   private client = new AppwriteClient();
 
   cardData: CardData[] = [];
+  displayCards: CardData[] = [];
+  category = Object.values(Category);
 
   constructor(private router: Router) { }
 
@@ -36,9 +45,22 @@ export class HomeComponent implements OnInit {
     const { getAllPosts } = common(this.client);
 
     this.cardData = await getAllPosts(true);
+    this.cardData = this.cardData.reverse()
+    this.displayCards = this.cardData;
   }
 
   goToPost(postID: string) {
     this.router.navigate(['/post', postID]);
   }
+ onFilterChange(event: MatSelectChange): void {
+
+  if (event.value == "all") {
+    this.displayCards = this.cardData;
+    return
+  }
+
+  this.displayCards = this.cardData.filter( (element) =>
+  element.category == event.value)
+  
+}
 }

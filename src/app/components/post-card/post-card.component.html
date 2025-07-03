@@ -4,10 +4,10 @@
     <mat-card-title>{{ card.title }}</mat-card-title>
 
     <mat-card-content>
-        {{ card.description }}
-    </mat-card-content>
+    <div>{{ card.description }}</div>
+</mat-card-content>
 
     <div class="card-actions">
-        <ng-content></ng-content>
+        <button  matButton>{{card.category}}</button>
     </div>
 </mat-card>

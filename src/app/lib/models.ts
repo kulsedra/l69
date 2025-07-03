@@ -3,7 +3,7 @@ export interface Post {
     date: string;
     title: string;
     description: string;
-    category: 'events' | 'news' | 'backstage' | 'other';
+    category: Category;
 }
 
 export type PostResourceType = 'post_thumbnail_storage_link' | 'post_picture_storage_link' | 'post_markdown_storage_link';
@@ -24,10 +24,19 @@ export interface CardData {
     description: string;
     thumbnail: string;
     postID: string;
+    category?: Category;
+
 }
 
 export interface PostFormData {
     post: Post;
     thumbnail: File;
     markdown: File | string;
+}
+
+export enum Category {
+    Events = 'events',
+    News = 'news',
+    Backstage = 'backstage',
+    Other = 'other'
 }

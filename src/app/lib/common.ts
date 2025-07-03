@@ -70,12 +70,14 @@ export const common = (client: AppwriteClient) => {
 
     const createCardData = async (post: any): Promise<CardData> => {
         const thumbnail = await downloadPostThumbnail(post.$id);
+        
 
         return {
             title: post.title,
             description: post.description,
             thumbnail: thumbnail || 'https://placehold.co/300x200?text=No_image_found', // Fallback image if no thumbnail is found
-            postID: post.$id
+            postID: post.$id,
+            category: post.category 
         };
     }
 
