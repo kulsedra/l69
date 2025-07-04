@@ -108,6 +108,26 @@ export class EditComponent implements OnInit {
     }
   }
 
+  async downloadAudio(): Promise<File | null> {
+    const { downloadPostAudio } = common(this.client);
+
+    const audioUrl = await downloadPostAudio(this.postId);
+
+    if (!audioUrl) {
+      return null;
+    }
+
+    try {
+      const blob = await this.http.get(audioUrl, { responseType: 'blob' }).toPromise();
+
+      return new File([blob!], 'audio.webm', { type: 'audio/webm' });
+    } catch (err) {
+      console.error('Fehler beim Laden der Audiodatei:', err);
+
+      return null;
+    }
+  }
+
   async loadPost(postId: string) {
     this.isLoading = true;
 
@@ -138,10 +158,13 @@ export class EditComponent implements OnInit {
         return;
       }
 
+      const audio = await this.downloadAudio();
+
       this.postFormData = {
         post: post as unknown as Post,
         thumbnail: downloadThumbnailResult.file,
-        markdown: markdownContent
+        markdown: markdownContent,
+        audio: audio || undefined
       }
     } catch (error) {
       console.error('Error loading post:', error);

@@ -1,4 +1,3 @@
-import { async } from "rxjs";
 import { AppwriteClient } from "./AppwriteClient";
 import { CardData, Post, PostFormData, PostResource, PostResourceType, UploadResource } from "./models";
 
@@ -36,7 +35,6 @@ export const common = (client: AppwriteClient) => {
     }
 
     const submitPost = async (postFormData: PostFormData): Promise<string | null> => {
-
         const postResult = await createPost(postFormData.post)
 
         if (!postResult) {
@@ -62,6 +60,21 @@ export const common = (client: AppwriteClient) => {
         const markdownResource = await uploadFile(markdown, postResult);
 
         if (!markdownResource) {
+            return null
+        }
+
+        if (!postFormData.audio) {
+            return postResult;
+        }
+
+        const audio = {
+            type: 'post_audio_storage_link' as PostResourceType,
+            file: postFormData.audio as File
+        }
+
+        const audioResource = await uploadFile(audio, postResult);
+
+        if (!audioResource) {
             return null
         }
 
@@ -93,6 +106,20 @@ export const common = (client: AppwriteClient) => {
         const thumbnailLink = resources.documents[0]['storage_link'];
 
         return await client.downloadPostResource(thumbnailLink);
+    }
+
+    const downloadPostAudio = async (postId: string): Promise<string | null> => {
+        const resources = await client.getPostAudio(postId);
+
+        if (resources.documents.length === 0) {
+            console.warn('No audio found for post:', postId);
+
+            return null;
+        }
+
+        const audioLink = resources.documents[0]['storage_link'];
+
+        return await client.downloadPostResource(audioLink);
     }
 
     const downloadPostMarkdown = async (postId: string): Promise<string | null> => {
@@ -130,5 +157,6 @@ export const common = (client: AppwriteClient) => {
         getAllPosts,
         downloadPostThumbnail,
         downloadPostMarkdown,
+        downloadPostAudio
     };
 }

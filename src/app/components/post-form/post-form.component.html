@@ -72,6 +72,8 @@
         <hr>
       </div>
 
+      <app-audio-recorder [file]="postFormData?.audio || null" (fileRecorded)="onAudioChange($event)" />
+
       <div class="markdown-editor-section">
         <p>Erstelle deinen Post*</p>
         <angular-markdown-editor textareaId="blogPost" name="markdownText" [(ngModel)]="markdownText"

@@ -66,13 +66,13 @@ export class AppwriteClient {
         );
     }
 
-    public async getPostPictures(postID: string) {
+    public async getPostAudio(postID: string) {
         return this.databases.listDocuments(
             'l69',
             'post_ressources',
             [
                 Query.equal('post', postID),
-                Query.equal('type', 'post_picture_storage_link')
+                Query.equal('type', 'post_audio_storage_link')
             ]
         );
     }

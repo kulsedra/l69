@@ -22,6 +22,8 @@ export class PostComponent implements OnInit {
 
   postMarkdown: string | null = null;
 
+  postAudio: string | null = null;
+
   client = new AppwriteClient();
 
   markdownService: MarkdownService;
@@ -35,10 +37,12 @@ export class PostComponent implements OnInit {
 
     this.post = await this.client.getPost(this.postId) as unknown as Post;
 
-    const { downloadPostThumbnail, downloadPostMarkdown } = common(this.client);
+    const { downloadPostThumbnail, downloadPostMarkdown, downloadPostAudio } = common(this.client);
 
     this.postThumbnail = await downloadPostThumbnail(this.postId);
 
     this.postMarkdown = await downloadPostMarkdown(this.postId);
+
+    this.postAudio = await downloadPostAudio(this.postId);
   }
 }

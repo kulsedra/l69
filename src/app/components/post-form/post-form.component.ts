@@ -13,6 +13,7 @@ import { MarkdownService } from 'ngx-markdown';
 import { Post, PostFormData } from '../../lib/models';
 import { FileUrlComponent } from "../file-url/file-url.component";
 import { MatCardModule } from '@angular/material/card';
+import { AudioRecorderComponent } from "../audio-recorder/audio-recorder.component";
 
 @Component({
   selector: 'app-post-form',
@@ -29,7 +30,8 @@ import { MatCardModule } from '@angular/material/card';
     AngularMarkdownEditorModule,
     FormsModule,
     FileUrlComponent,
-    MatCardModule
+    MatCardModule,
+    AudioRecorderComponent
   ],
   templateUrl: './post-form.component.html',
   styleUrl: './post-form.component.css'
@@ -48,6 +50,8 @@ export class PostFormComponent implements OnInit {
   markdownText: string = '';
 
   thumbnailFile: File | null = null;
+
+  audioFile: File | null = null;
 
   imageURLs: string[] = [];
 
@@ -90,6 +94,7 @@ export class PostFormComponent implements OnInit {
     this.formSubmit.emit({
       post,
       thumbnail: this.thumbnailFile,
+      audio: this.audioFile || undefined,
       markdown: new File([this.markdownText], `${crypto.randomUUID()}.md`, { type: 'text/markdown' }),
     });
   }
@@ -98,6 +103,10 @@ export class PostFormComponent implements OnInit {
     this.thumbnailFile = event.target.files[0];
 
     this.thumbnailChange.emit();
+  }
+
+  onAudioChange(event: File) {
+    this.audioFile = event;
   }
 
   onAdditionalFilesChange(event: any) {
